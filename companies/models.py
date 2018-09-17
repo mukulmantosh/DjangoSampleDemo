@@ -16,6 +16,8 @@ class CompanyModel(DataModel):
 
 class EmployeeModel(DataModel):
     company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     dob = models.DateField()
