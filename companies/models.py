@@ -17,6 +17,7 @@ class CompanyModel(DataModel):
 class EmployeeModel(DataModel):
     company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     dob = models.DateField()
     blood_group = models.CharField(max_length=50)
     mobile = models.CharField(max_length=10)
