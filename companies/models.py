@@ -14,12 +14,18 @@ class CompanyModel(DataModel):
     is_certified = models.BooleanField(default=False)
 
 
+class CompanyAdmin(DataModel):
+    company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=255)
+    password = models.CharField(max_length=255)
+    is_admin = models.BooleanField(default=False)
+
+
 class EmployeeModel(DataModel):
     company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
     dob = models.DateField()
     blood_group = models.CharField(max_length=50)
     mobile = models.CharField(max_length=10)
