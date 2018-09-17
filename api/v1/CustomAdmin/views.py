@@ -44,7 +44,8 @@ class AdminSignupAPI(APIView):
 
                         # Create new Admin.
                         user = User.objects.create(first_name=first_name, last_name=last_name,
-                                                   email=email, password=password)
+                                                   email=email, password=password, is_active=True,
+                                                   is_superuser=True)
 
                         user.set_password(password)
                         user.save()
