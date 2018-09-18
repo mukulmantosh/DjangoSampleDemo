@@ -103,3 +103,20 @@ class CompanyAdminSignupAPI(APIView):
             print(err)  # read err in background.
             return Response({"status": False, "message": "Something went wrong.", "data": None},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EmployeeSignupAPI(APIView):
+    permission_classes = (AllowAny,)
+    serializers_class = serializers.EmployeeSignupSerializer
+
+    def post(self, request):
+        try:
+            serializer = self.serializers_class(data=request.data)
+            if serializer.is_valid() is not True:
+                return Response({"status": False, "message": serializer.errors, "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+            clean_data = serializer.data
+
+        except Exception as err:
+            return Response({"status": False, "message": "Something went wrong.", "data": None},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

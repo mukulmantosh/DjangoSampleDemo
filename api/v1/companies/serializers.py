@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from companies.models import CompanyModel
 from django.core.validators import MaxLengthValidator, EmailValidator, ValidationError
-from api.v1.CustomAdmin import validators
+from api.v1.CustomAdmin import validators as user_validator
+from . import validators
+
 
 class CompanySignupSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, validators=[MaxLengthValidator(255)])
@@ -13,8 +15,8 @@ class CompanySignupSerializer(serializers.Serializer):
 class CompanyAdminSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     last_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
-    company = serializers.IntegerField(required=True)
-    email = serializers.EmailField(required=True, validators=[EmailValidator, validators.UserEmailExist])
+    company = serializers.IntegerField(required=True, validators=[validators.companyExist])
+    email = serializers.EmailField(required=True, validators=[EmailValidator, user_validator.UserEmailExist])
     password = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator])
 
     def validate_company(self, company):
@@ -25,10 +27,13 @@ class CompanyAdminSignupSerializer(serializers.Serializer):
 
 
 class EmployeeSignupSerializer(serializers.Serializer):
-    name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
-    company_id = serializers.IntegerField(required=True)
+    first_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
+    last_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
+    company = serializers.IntegerField(required=True, validators=[validators.companyExist])
     email = serializers.EmailField(required=True, validators=[EmailValidator])
     password = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     dob = serializers.DateField(required=True)
     blood_group = serializers.ChoiceField(required=True)
     mobile = serializers.CharField(required=True, max_length=10, validators=[MaxLengthValidator(10)])
+    permanent_address = serializers.CharField(required=True, max_length=500)
+    temporary_address = serializers.CharField(required=True, max_length=500)
