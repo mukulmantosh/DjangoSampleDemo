@@ -6,7 +6,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
-from companies.models import EmployeeModel, CompanyModel
+from companies.models import CompanyModel, CompanyAdminModel
+from CustomAdmin.models import User
 from . import serializers
 
 
@@ -59,3 +60,46 @@ class CompanySignupAPI(APIView):
             print(err)  # read error in background.
             return Response({"status": False, "message": "Something went wrong.",
                              "data": None}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class CompanyAdminSignupAPI(APIView):
+    permission_classes = (AllowAny,)
+    serializers_class = serializers.CompanyAdminSignupSerializer
+
+    def post(self, request):
+        try:
+            serializer = self.serializers_class(data=request.data)
+            if serializer.is_valid() is not True:
+                return Response({"status": False, "message": serializer.errors, "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            clean_data = serializer.data
+            first_name = clean_data["first_name"]
+            last_name = clean_data["last_name"]
+            company_id = clean_data["company"]
+            email = clean_data["email"]
+            password = clean_data["password"]
+
+            try:
+                with transaction.atomic():
+                    # Create new user.
+                    user = User.objects.create(first_name=first_name, last_name=last_name, email=email,
+                                               password=password, is_company_admin=True, is_active=True)
+                    user.set_password(password)
+                    user.save()
+
+                    # Associate user to Company Admin.
+                    CompanyAdminModel.objects.create(user_id=user.id, company_id=company_id)
+
+                return Response({"status": True, "message": "New Company Admin Created !", "data": None},
+                                status=status.HTTP_201_CREATED)
+            except IntegrityError as err:
+                print(err)  # read err in background.
+                transaction.rollback()
+                return Response({"status": False, "message": "Something went wrong.", "data": None},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as err:
+            print(err)  # read err in background.
+            return Response({"status": False, "message": "Something went wrong.", "data": None},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

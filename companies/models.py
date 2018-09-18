@@ -1,4 +1,5 @@
 from django.db import models
+from CustomAdmin.models import User
 
 
 class DataModel(models.Model):
@@ -14,20 +15,23 @@ class CompanyModel(DataModel):
     is_certified = models.BooleanField(default=False)
 
 
-class CompanyAdmin(DataModel):
-    company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=255)
-    password = models.CharField(max_length=255)
-    is_admin = models.BooleanField(default=False)
+class CompanyAdminModel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    company = models.ForeignKey(CompanyModel, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'company')
 
 
-class EmployeeModel(DataModel):
-    company = models.OneToOneField(CompanyModel, on_delete=models.CASCADE)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
-    is_active = models.BooleanField(default=False)
+class EmployeeProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     dob = models.DateField()
     blood_group = models.CharField(max_length=50)
     mobile = models.CharField(max_length=10)
+    permanent_address = models.TextField(max_length=500)
+    temporary_address = models.TextField(max_length=500)
 
 
+class CompanyEmployee(models.Model):
+    company = models.ForeignKey(CompanyModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

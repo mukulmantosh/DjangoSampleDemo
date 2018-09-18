@@ -40,6 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     jwt_secret = models.UUIDField(default=uuid.uuid4, null=True)
     email = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=False)
+    is_company_admin = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
