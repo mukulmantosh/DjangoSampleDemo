@@ -41,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=False)
     is_company_admin = models.BooleanField(default=False)
+    is_employee = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

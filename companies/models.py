@@ -35,3 +35,6 @@ class EmployeeProfile(models.Model):
 class CompanyEmployee(models.Model):
     company = models.ForeignKey(CompanyModel, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'company')

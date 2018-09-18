@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
-from companies.models import CompanyModel, CompanyAdminModel
+from companies.models import CompanyModel, CompanyAdminModel, CompanyEmployee, EmployeeProfile
 from CustomAdmin.models import User
 from . import serializers
 
@@ -116,6 +116,39 @@ class EmployeeSignupAPI(APIView):
                 return Response({"status": False, "message": serializer.errors, "data": None},
                                 status=status.HTTP_400_BAD_REQUEST)
             clean_data = serializer.data
+            first_name = clean_data["first_name"]
+            last_name = clean_data["last_name"]
+            company_id = clean_data["company"]
+            email = clean_data["email"]
+            password = clean_data["password"]
+            dob = clean_data["dob"]
+            blood_group = clean_data["blood_group"]
+            mobile = clean_data["mobile"]
+            permanent_address = clean_data["permanent_address"]
+            temporary_address = clean_data["temporary_address"]
+
+            try:
+                with transaction.atomic():
+                    # create new user.
+                    user = User.objects.create(first_name=first_name, last_name=last_name, email=email,
+                                               password=password, is_active=True, is_employee=True)
+                    user.set_password(password)
+                    user.save()
+
+                    # create user profile.
+                    EmployeeProfile.objects.create(user_id=user.id, dob=dob, blood_group=blood_group, mobile=mobile,
+                                                   temporary_address=temporary_address,
+                                                   permanent_address=permanent_address)
+
+                    # associate user with company.
+                    CompanyEmployee.objects.create(user_id=user.id, company_id=company_id)
+
+                return Response({"status": True, "message": "New Employee Successfully Created !", "data": None},
+                                status=status.HTTP_201_CREATED)
+
+            except IntegrityError as err:
+                return Response({"status": False, "message": "Something went wrong.", "data": None},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         except Exception as err:
             return Response({"status": False, "message": "Something went wrong.", "data": None},
