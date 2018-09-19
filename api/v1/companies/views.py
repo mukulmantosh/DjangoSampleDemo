@@ -1,6 +1,5 @@
 """ Importing Django Rest Framework Libraries and Module Dependencies. """
 
-# pylint: disable=import-error
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -8,18 +7,19 @@ from rest_framework import status
 from django.db import transaction, IntegrityError
 from companies.models import CompanyModel, CompanyAdminModel, CompanyEmployee, EmployeeProfile
 from CustomAdmin.models import User
+from CustomAdmin import custom_permissions
 from . import serializers
 
 
 class CompanySignupAPI(APIView):
-
     """
     use this endpoint to create new company.
     Companies can only be created by Admins.
 
     """
-    permission_classes = (AllowAny,)
+    permission_classes = (custom_permissions.IsSuperUser,)
     serializers_class = serializers.CompanySignupSerializer
+    remove_company_serializer_class = serializers.RemoveCompanySerializer
 
     def post(self, request):
         try:
@@ -54,9 +54,31 @@ class CompanySignupAPI(APIView):
             return Response({"status": False, "message": "Something went wrong.",
                              "data": None}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+    def delete(self, request):
+        try:
+            serializer = self.remove_company_serializer_class(data=request.data)
+            if serializer.is_valid() is not True:
+                return Response({"status": False, "message": serializer.errors, "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+            clean_data = serializer.data
+            company_id = clean_data["company_id"]
+
+            if CompanyModel.objects.filter(id=company_id).exists():
+                # remove company.
+                CompanyModel.objects.filter(id=company_id).delete()
+                return Response({"status": False, "message": "Company Removed !", "data": None},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({"status": False, "message": "Something went wrong.", "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+        except Exception as err:
+            print(err)  # read err in background.
+            return Response({"status": False, "message": "Something went wrong.", "data": None},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class CompanyAdminSignupAPI(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (custom_permissions.IsSuperUser,)
     serializers_class = serializers.CompanyAdminSignupSerializer
 
     def post(self, request):
@@ -99,7 +121,7 @@ class CompanyAdminSignupAPI(APIView):
 
 
 class EmployeeSignupAPI(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (custom_permissions.IsSuperUserOrCompanyAdmin,)
     serializers_class = serializers.EmployeeSignupSerializer
 
     def post(self, request):
@@ -149,7 +171,7 @@ class EmployeeSignupAPI(APIView):
 
 
 class EmployeeProfileEditAPI(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (custom_permissions.IsSuperUserOrCompanyAdmin,)
     serializers_class = serializers.EmployeeProfileSerializer
 
     def post(self, request):
@@ -182,4 +204,17 @@ class EmployeeProfileEditAPI(APIView):
 
         except Exception as err:
             return Response({"status": False, "message": "Something went wrong.", "data": False},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class RemoveEmployeeAPI(APIView):
+    permission_classes = (AllowAny,)
+    serializers_class = serializers.RemoveEmployeeSerializer
+
+    def delete(self, request):
+        try:
+            pass
+        except Exception as err:
+            print(err)  # read err in background.
+            return Response({"status": False, "message": "Something went wrong.", "data": None},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)

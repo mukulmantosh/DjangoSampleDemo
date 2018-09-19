@@ -24,6 +24,10 @@ class CompanySignupSerializer(serializers.Serializer):
     is_certified = serializers.IntegerField(required=True, max_value=1, min_value=0)
 
 
+class RemoveCompanySerializer(serializers.Serializer):
+    company_id = serializers.IntegerField(required=True)
+
+
 class CompanyAdminSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     last_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
@@ -57,3 +61,7 @@ class EmployeeProfileSerializer(serializers.Serializer):
     mobile = serializers.CharField(max_length=10, required=True)
     permanent_address = serializers.CharField(max_length=500, required=True)
     temporary_address = serializers.CharField(max_length=500, required=True)
+
+
+class RemoveEmployeeSerializer(serializers.Serializer):
+    employee_id = serializers.IntegerField(required=True)
