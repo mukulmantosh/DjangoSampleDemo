@@ -1,6 +1,5 @@
 """ Importing Django Rest Framework Libraries and Module Dependencies. """
 
-# pylint: disable=import-error
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,7 +11,6 @@ from . import serializers
 
 
 class AdminSignupAPI(APIView):
-    # pylint: disable=too-few-public-methods
 
     """
     use this endpoint to create new Admin.
@@ -22,13 +20,6 @@ class AdminSignupAPI(APIView):
     serializers_class = serializers.AdminSignupSerializer
 
     def post(self, request):
-        """
-        :param first_name: CharField
-        :param last_name: CharField
-        :param email: EmailField
-        :param password: CharField
-        :return: return description
-        """
         try:
             serializer = self.serializers_class(data=request.data)
             if serializer.is_valid():
