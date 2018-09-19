@@ -12,7 +12,6 @@ from . import serializers
 
 
 class CompanySignupAPI(APIView):
-    # pylint: disable=too-few-public-methods
 
     """
     use this endpoint to create new company.
@@ -23,12 +22,6 @@ class CompanySignupAPI(APIView):
     serializers_class = serializers.CompanySignupSerializer
 
     def post(self, request):
-        """
-        :param name: CharField
-        :param founded_by: CharField
-        :param is_certified: IntegerField
-        :return: return description
-        """
         try:
             serializer = self.serializers_class(data=request.data)
             if serializer.is_valid():
