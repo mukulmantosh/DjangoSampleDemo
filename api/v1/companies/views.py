@@ -153,3 +153,40 @@ class EmployeeSignupAPI(APIView):
         except Exception as err:
             return Response({"status": False, "message": "Something went wrong.", "data": None},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class EmployeeProfileEditAPI(APIView):
+    permission_classes = (AllowAny,)
+    serializers_class = serializers.EmployeeProfileSerializer
+
+    def post(self, request):
+        try:
+            serializer = self.serializers_class(data=request.data)
+            if serializer.is_valid() is not True:
+                return Response({"status": False, "message": serializer.errors, "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            clean_data = serializer.data
+            dob = clean_data["dob"]
+            blood_group = clean_data["blood_group"]
+            mobile = clean_data["mobile"]
+            permanent_address = clean_data["permanent_address"]
+            temporary_address = clean_data["temporary_address"]
+
+            if EmployeeProfile.objects.filter(user_id=request.user.id).exists():
+                # update profile
+                EmployeeProfile.objects.filter(user_id=request.user.id).update(dob=dob, blood_group=blood_group,
+                                                                               mobile=mobile,
+                                                                               permanent_address=permanent_address,
+                                                                               temporary_address=temporary_address)
+                return Response({"status": True, "message": "Profile Updated !", "data": None},
+                                status=status.HTTP_200_OK)
+
+            else:
+
+                return Response({"status": False, "message": "There is no user with this profile.", "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as err:
+            return Response({"status": False, "message": "Something went wrong.", "data": False},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

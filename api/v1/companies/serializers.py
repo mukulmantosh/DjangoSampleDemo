@@ -4,6 +4,18 @@ from django.core.validators import MaxLengthValidator, EmailValidator, Validatio
 from api.v1.CustomAdmin import validators as user_validator
 from . import validators
 
+BLOOD_GROUP = (
+    ('A+', 'A+'),
+    ('O+', 'O+'),
+    ('B+', 'B+'),
+    ('AB+', 'AB+'),
+    ('A-', 'A-'),
+    ('O-', 'O-'),
+    ('B-', 'B-'),
+    ('AB-', 'AB-'),
+
+)
+
 
 class CompanySignupSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, validators=[MaxLengthValidator(255)])
@@ -33,7 +45,15 @@ class EmployeeSignupSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True, validators=[EmailValidator])
     password = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     dob = serializers.DateField(required=True)
-    blood_group = serializers.ChoiceField(required=True)
+    blood_group = serializers.ChoiceField(required=True, choices=BLOOD_GROUP)
     mobile = serializers.CharField(required=True, max_length=10, validators=[MaxLengthValidator(10)])
     permanent_address = serializers.CharField(required=True, max_length=500)
     temporary_address = serializers.CharField(required=True, max_length=500)
+
+
+class EmployeeProfileSerializer(serializers.Serializer):
+    dob = serializers.DateField(required=True)
+    blood_group = serializers.ChoiceField(required=True, choices=BLOOD_GROUP)
+    mobile = serializers.CharField(max_length=10, required=True)
+    permanent_address = serializers.CharField(max_length=500, required=True)
+    temporary_address = serializers.CharField(max_length=500, required=True)
