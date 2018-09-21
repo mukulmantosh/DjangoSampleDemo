@@ -39,7 +39,7 @@ class CompanyAdminSignupSerializer(serializers.Serializer):
 class EmployeeSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     last_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
-    company = serializers.IntegerField(required=True, validators=[validators.companyExist])
+    company_id = serializers.IntegerField(required=True, validators=[validators.companyExist])
     email = serializers.EmailField(required=True, validators=[EmailValidator])
     password = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     dob = serializers.DateField(required=True)

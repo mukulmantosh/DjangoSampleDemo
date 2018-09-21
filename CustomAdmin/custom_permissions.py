@@ -22,6 +22,7 @@ class IsSuperUser(permissions.BasePermission):
 
 class IsSuperUserOrCompanyAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
+        print(request.user)
         if request.user.is_company_admin or request.user.is_superuser:
             return True
         return False

@@ -1,7 +1,7 @@
 """ Importing Django Rest Framework Libraries and Module Dependencies. """
 
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction, IntegrityError
@@ -17,7 +17,7 @@ class CompanySignupAPI(APIView):
     Companies can only be created by Admins.
 
     """
-    permission_classes = (custom_permissions.IsSuperUser,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUser,)
     serializers_class = serializers.CompanySignupSerializer
     remove_company_serializer_class = serializers.RemoveCompanySerializer
 
@@ -78,7 +78,7 @@ class CompanySignupAPI(APIView):
 
 
 class CompanyAdminSignupAPI(APIView):
-    permission_classes = (custom_permissions.IsSuperUser,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUser,)
     serializers_class = serializers.CompanyAdminSignupSerializer
 
     def post(self, request):
@@ -121,7 +121,7 @@ class CompanyAdminSignupAPI(APIView):
 
 
 class EmployeeSignupAPI(APIView):
-    permission_classes = (custom_permissions.IsSuperUserOrCompanyAdmin,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUserOrCompanyAdmin,)
     serializers_class = serializers.EmployeeSignupSerializer
 
     def post(self, request):
@@ -133,7 +133,7 @@ class EmployeeSignupAPI(APIView):
             clean_data = serializer.data
             first_name = clean_data["first_name"]
             last_name = clean_data["last_name"]
-            company_id = clean_data["company"]
+            company_id = clean_data["company_id"]
             email = clean_data["email"]
             password = clean_data["password"]
             dob = clean_data["dob"]
@@ -171,7 +171,7 @@ class EmployeeSignupAPI(APIView):
 
 
 class EmployeeProfileEditAPI(APIView):
-    permission_classes = (custom_permissions.IsSuperUserOrCompanyAdmin,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUserOrCompanyAdmin,)
     serializers_class = serializers.EmployeeProfileSerializer
 
     def post(self, request):
