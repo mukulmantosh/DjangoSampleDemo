@@ -2,7 +2,7 @@ from django.conf.urls import url
 import api.v1.companies.views as v1_companies_views
 import api.v1.CustomAdmin.views as v1_custom_admin_views
 
-app_name = "api/v1"
+app_name = "v1"
 
 urlpatterns = [
 
