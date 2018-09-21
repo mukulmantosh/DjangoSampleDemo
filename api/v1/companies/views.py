@@ -91,7 +91,7 @@ class CompanyAdminSignupAPI(APIView):
             clean_data = serializer.data
             first_name = clean_data["first_name"]
             last_name = clean_data["last_name"]
-            company_id = clean_data["company"]
+            company_id = clean_data["company_id"]
             email = clean_data["email"]
             password = clean_data["password"]
 

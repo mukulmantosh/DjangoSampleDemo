@@ -31,15 +31,9 @@ class RemoveCompanySerializer(serializers.Serializer):
 class CompanyAdminSignupSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
     last_name = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator(255)])
-    company = serializers.IntegerField(required=True, validators=[validators.companyExist])
+    company_id = serializers.IntegerField(required=True, validators=[validators.companyExist])
     email = serializers.EmailField(required=True, validators=[EmailValidator, user_validator.UserEmailExist])
     password = serializers.CharField(required=True, max_length=255, validators=[MaxLengthValidator])
-
-    def validate_company(self, company):
-        if CompanyModel.objects.filter(id=company).exists():
-            return company
-        else:
-            raise ValidationError({"Sorry! This Company does not exist."})
 
 
 class EmployeeSignupSerializer(serializers.Serializer):
