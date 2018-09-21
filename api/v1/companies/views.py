@@ -171,7 +171,7 @@ class EmployeeSignupAPI(APIView):
 
 
 class EmployeeProfileEditAPI(APIView):
-    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUserOrCompanyAdmin,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsEmployee,)
     serializers_class = serializers.EmployeeProfileSerializer
 
     def post(self, request):
@@ -213,7 +213,16 @@ class RemoveEmployeeAPI(APIView):
 
     def delete(self, request):
         try:
-            pass
+            serializer = self.serializers_class(data=request.data)
+            if serializer.is_valid() is not True:
+                return Response({"status": False, "message": serializer.errors, "data": None},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            clean_data = serializer.data
+            employee_id = clean_data["employee_id"]
+            User.objects.filter(id=employee_id, is_employee=True).delete()
+            return Response({"status": True, "message": "Employee Deleted !", "data": None},
+                            status=status.HTTP_204_NO_CONTENT)
         except Exception as err:
             print(err)  # read err in background.
             return Response({"status": False, "message": "Something went wrong.", "data": None},

@@ -2,6 +2,7 @@ from rest_framework import serializers
 from companies.models import CompanyModel
 from django.core.validators import MaxLengthValidator, EmailValidator, ValidationError
 from api.v1.CustomAdmin import validators as user_validator
+from CustomAdmin.models import User
 from . import validators
 
 BLOOD_GROUP = (
@@ -59,3 +60,9 @@ class EmployeeProfileSerializer(serializers.Serializer):
 
 class RemoveEmployeeSerializer(serializers.Serializer):
     employee_id = serializers.IntegerField(required=True)
+
+    def validate_employee_id(self, employee_id):
+        if User.objects.filter(id=employee_id, is_employee=True).exists() is not True:
+            raise ValidationError("Sorry! We did not find any employee.")
+        else:
+            return employee_id
