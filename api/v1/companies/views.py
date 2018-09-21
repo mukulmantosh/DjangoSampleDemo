@@ -208,7 +208,7 @@ class EmployeeProfileEditAPI(APIView):
 
 
 class RemoveEmployeeAPI(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated, custom_permissions.IsSuperUserOrCompanyAdmin)
     serializers_class = serializers.RemoveEmployeeSerializer
 
     def delete(self, request):
