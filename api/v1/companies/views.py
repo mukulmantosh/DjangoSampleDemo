@@ -227,3 +227,9 @@ class RemoveEmployeeAPI(APIView):
             print(err)  # read err in background.
             return Response({"status": False, "message": "Something went wrong.", "data": None},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+class UserAPI(APIView):
+    def post(self, request):
+        return Response({"status": True, "message": "User Registered !"})
