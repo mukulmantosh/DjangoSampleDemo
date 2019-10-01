@@ -15,6 +15,7 @@ class CompanySignupAPI(APIView):
     """
     use this endpoint to create new company.
     Companies can only be created by Admins.
+    More details can be found in Swagger Docs.
 
     """
     permission_classes = (IsAuthenticated, custom_permissions.IsSuperUser,)
