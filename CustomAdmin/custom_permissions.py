@@ -1,3 +1,6 @@
+"""
+Custom Permissions checks to handle permissions in views.
+"""
 from rest_framework import permissions
 
 
